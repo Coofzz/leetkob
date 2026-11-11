@@ -46,7 +46,7 @@ export function submissionsRouter(db: DatabaseSync) {
       SELECT l.id, l.deadline_at FROM labs l
         JOIN class_members m ON m.class_id = l.class_id
         JOIN users u ON u.id = m.user_id
-       WHERE l.id = ? AND u.id = ? AND u.role = 'student'`),
+       WHERE l.id = ? AND ? IS NOT NULL AND u.role = 'student'`),
     storedKey: db.prepare(
       'SELECT fingerprint, status, location, body FROM idempotency_keys WHERE student_id = ? AND key = ?',
     ),

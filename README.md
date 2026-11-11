@@ -11,7 +11,7 @@ Brief: the class project brief on Classroom. Endpoint contract: [`docs/contract/
 ## Setup
 
 ```bash
-git clone https://github.com/<user>/leetkob.git
+git clone https://github.com/Coofzz/leetkob.git
 cd leetkob
 npm ci
 cp .env.example .env      # fill in values; .env is never committed
@@ -33,6 +33,9 @@ protected: all five jobs are required, and nothing is pushed to `main` directly.
 
 ## Model and spending cap
 
-The constraint review (PA#3) calls `<provider> <model>`. The API key lives only in `.env` and in no
-other place; it has a spending cap of **<amount> USD per month**, set in the provider's console.
-Expected cost of one lab (80 submissions): <to be measured in PA#3>.
+The constraint review (PA#3) calls Google Gemini `<tên model>` through the Gemini API.
+The API key lives only in `.env` (git-ignored) and in no other place. Spending cap: **0 USD per month** —
+the key belongs to a Google AI Studio project with no billing account, so it can only use the free tier
+and can never be charged. Before PA#3 we will decide whether to enable billing; if we do, a monthly budget
+cap of 5 USD will be set in Google Cloud Billing first.
+Expected cost of one lab (80 submissions): to be measured in PA#3.

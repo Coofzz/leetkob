@@ -28,6 +28,8 @@ npm run lint · npm run format:check · npm run typecheck · npm test · npm run
 - Let the model decide a deduction (the TA does), or publish marks before the TA has reviewed them.
 - Read or print .env. Never put a key in code, logs, prompts or commits.
 - Push to main, or force-push.
+- Mount a global body parser (`app.use(express.json())`). Parse the body inside the route, after the ownership check. Why: the skeleton had one, so a bad body from another class got invalid-json instead of 404 and leaked that the lab exists; test "§4 ownership is checked before the body" went red in PR #3 (https://github.com/Coofzz/leetkob/pull/3), fixed in commit https://github.com/Coofzz/leetkob/commit/160cfb9.
+- Pipe a check command (`npm test | grep pass`). The pipe keeps the last command's exit code, so the check can never fail. Use `--test-reporter=spec`. Why: while building the skeleton, `npm test | grep "pass"` printed nothing and hid whether the tests had failed; see AI-LOG.md, 2026-11-11.
 
 ## Permissions (enforced in .claude/settings.json)
 - Allowed (local only, undone with one command): the five checks, `npm run format`, `git status`, `git diff`, `git log`.

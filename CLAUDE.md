@@ -28,8 +28,6 @@ npm run lint · npm run format:check · npm run typecheck · npm test · npm run
 - Let the model decide a deduction (the TA does), or publish marks before the TA has reviewed them.
 - Read or print .env. Never put a key in code, logs, prompts or commits.
 - Push to main, or force-push.
-- Mount a global body parser (`app.use(express.json())`). Parse the body inside the route, after the ownership check. Why: the scaffold had one, so a bad body from another class got invalid-json instead of 404 and leaked that the lab exists; test "§4 ownership is checked before the body" went red, fixed in PR #3.
-- Pipe a check command (`npm test | grep pass`). The pipe keeps the last command's exit code, so the check can never fail. Use `--test-reporter=spec`. Why: this hid real results once; see AI-LOG.md.
 
 ## Permissions (enforced in .claude/settings.json)
 - Allowed (local only, undone with one command): the five checks, `npm run format`, `git status`, `git diff`, `git log`.

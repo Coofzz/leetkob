@@ -33,7 +33,7 @@ protected: all five jobs are required, and nothing is pushed to `main` directly.
 
 ## Model and spending cap
 
-The constraint review (PA#3) calls Google Gemini `<tên model>` through the Gemini API.
+The constraint review (PA#3) calls Google Gemini `gemini-2.5-flash` through the Gemini API.
 The API key lives only in `.env` (git-ignored) and in no other place. Spending cap: **0 USD per month** —
 the key belongs to a Google AI Studio project with no billing account, so it can only use the free tier
 and can never be charged. Before PA#3 we will decide whether to enable billing; if we do, a monthly budget

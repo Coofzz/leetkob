@@ -9,6 +9,11 @@ export const PROBLEMS = {
   validation: { status: 400, title: 'Invalid request' },
   unauthenticated: { status: 401, title: 'Authentication required' },
   'not-found': { status: 404, title: 'Not found' },
+  'idempotency-key-missing': { status: 400, title: 'Idempotency-Key required' },
+  'code-too-large': { status: 413, title: 'Code too large' },
+  'idempotency-key-in-flight': { status: 409, title: 'Request in progress' },
+  'idempotency-key-reused': { status: 422, title: 'Idempotency-Key reused' },
+  'deadline-passed': { status: 422, title: 'Deadline passed' },
   internal: { status: 500, title: 'Internal error' },
 } as const satisfies Record<string, { status: number; title: string }>;
 

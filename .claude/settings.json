@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run format:check)",
+      "Bash(npm run format)",
+      "Bash(npm run typecheck)",
+      "Bash(npm test)",
+      "Bash(npm run test:contract)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(git commit *)",
+      "Bash(npm install *)",
+      "Bash(npm i *)",
+      "Edit(./migrations/**)",
+      "Edit(./.github/**)",
+      "Edit(./CLAUDE.md)",
+      "Edit(./docs/contract/**)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Edit(./test/contract/**)",
+      "Bash(git push --force*)",
+      "Bash(git push origin main*)",
+      "Bash(git tag *)"
+    ]
+  }
+}

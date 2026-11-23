@@ -4,7 +4,7 @@
 //
 //   npm run model:smoke          (reads LLM_API_KEY and LLM_MODEL from .env)
 import { mkdirSync } from 'node:fs';
-import { appendCall } from '../src/checker/call-log.ts';
+import { appendCall, DEFAULT_MODEL } from '../src/checker/call-log.ts';
 import { deidentify } from '../src/checker/deidentify.ts';
 import { createGeminiClient } from '../src/checker/gemini.ts';
 import { buildPrompt } from '../src/checker/prompt.ts';
@@ -27,7 +27,7 @@ const prompt = buildPrompt({
   numberedCode: deidentify(source).numbered,
 });
 
-const model = process.env.LLM_MODEL || 'gemini-2.5-flash';
+const model = process.env.LLM_MODEL || DEFAULT_MODEL;
 const client = createGeminiClient({ apiKey: process.env.LLM_API_KEY ?? '', model, timeoutMs: 60_000 });
 
 mkdirSync('data', { recursive: true });

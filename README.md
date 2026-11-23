@@ -76,7 +76,8 @@ own user. Step by step, with the checks to run afterwards: [`docs/deploy.md`](do
 
 ## Model and spending cap
 
-The constraint review (PA#3) calls Google Gemini `gemini-2.5-flash` through the Gemini API.
+The constraint review (PA#3) calls Google Gemini `gemini-3.6-flash` through the Gemini API (set by
+`LLM_MODEL`; `gemini-2.5-flash`, named in PA#2, is no longer served to new keys).
 The API key lives only in `.env` (git-ignored) and in no other place. Spending cap: **0 USD per month** —
 the key belongs to a Google AI Studio project with no billing account, so it can only use the free tier
 and can never be charged. Before PA#3 we will decide whether to enable billing; if we do, a monthly budget

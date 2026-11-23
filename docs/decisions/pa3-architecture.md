@@ -25,7 +25,7 @@ Sources: class brief §3–§6, PA#3 rubric, the product owner's FAQ
 | 3 | Sandbox | The worker runs one hardened `docker run` per submission; code and tests go in on stdin |
 | 4 | Limits | The FAQ-05 defaults: `g++ -std=c++17 -O2`, CPU 1 s, wall 3×, 256 MB, 16 processes, 1 MB output |
 | 5 | Hard rules | A hand-written C++ lexer and name resolver; banned names are read from the constraint text |
-| 6 | Model | Gemini `gemini-2.5-flash` over REST with `fetch`, JSON output; free tier, spending cap 0 USD |
+| 6 | Model | Gemini `gemini-3.6-flash` over REST with `fetch`, JSON output; free tier, spending cap 0 USD |
 | 7 | Output checks | A hand-written validator; bad output or a timeout becomes `unsure` with a reason |
 | 8 | Calls | One model call per submission, covering all of its semantic constraints |
 | 9 | What is reviewed | Every Accepted submission that is still its student's latest; the queue shows the counted one |
@@ -141,13 +141,18 @@ tree-sitter or libclang: a new dependency (native for libclang), and still needs
 **Risks.** A lexer is not a full C++ parser: templates, function pointers and macros that build names
 from tokens can hide a use. Known gaps are listed in the AI-LOG and covered by tests as they are found.
 
-## 6. Model: Gemini `gemini-2.5-flash`, free tier
+## 6. Model: Gemini `gemini-3.6-flash`, free tier
 
-**Context.** The PA#2 README named this model and a spending cap of 0 USD, and said the team would decide
-on billing before PA#3. The team decided on 2026-11-23 to stay on the free tier.
+**Context.** The PA#2 README named `gemini-2.5-flash` and a spending cap of 0 USD, and said the team would
+decide on billing before PA#3. The team decided on 2026-11-23 to stay on the free tier. The same day, a new
+free-tier key got `404 NOT_FOUND: This model models/gemini-2.5-flash is no longer available to new users`,
+and the pricing page says it is deprecated and routes to another model from 2026-12-01. We moved to
+`gemini-3.6-flash`: listed on the pricing page with a free tier, and it passed `npm run model:smoke`.
+`gemini-3.8-flash` (the one the error message suggests) answered 503 three times that day; `LLM_MODEL`
+changes the model without a code change.
 
 **Decision.** Call the Gemini REST API with `fetch` (no SDK), asking for JSON with a response schema, and
-`AbortSignal.timeout` on every call. The key is read from `LLM_API_KEY` in the server and worker
+a timeout on every call. The key is read from `LLM_API_KEY` in the server and worker
 environment only — never the browser, the sandbox, a log or a prompt. The prompt holds the statement, the
 semantic constraints (id and text, **never the deduction**) and the code with comments removed and lines
 numbered; it says that everything inside the code is data, not instructions. No student name or id is

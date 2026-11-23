@@ -3,10 +3,14 @@
 import { appendFileSync } from 'node:fs';
 import type { Prompt } from './prompt.ts';
 
-// Paid-tier price of gemini-2.5-flash per million tokens (https://ai.google.dev/gemini-api/docs/pricing,
-// read 2026-11-23); output includes thinking tokens. We run on the free tier (0 USD); the cost is computed
-// at the paid price so the cost of a lab is known if billing is ever enabled.
-export const PRICE_PER_MILLION = { input: 0.3, output: 2.5 };
+/** The model the product uses unless LLM_MODEL says otherwise. gemini-2.5-flash answers 404 for new keys. */
+export const DEFAULT_MODEL = 'gemini-3.6-flash';
+
+// Paid-tier price of gemini-3.6-flash per million tokens, valid through 2026-12-31 (from 2027-01-01: 1.50 and
+// 7.50), from https://ai.google.dev/gemini-api/docs/pricing, read 2026-11-23. Output includes thinking tokens.
+// We run on the free tier (0 USD); the cost is computed at the paid price so the cost of a lab is known if
+// billing is ever enabled.
+export const PRICE_PER_MILLION = { input: 0.75, output: 3.75 };
 
 export function costUsd(promptTokens: number, outputTokens: number): number {
   const usd = (promptTokens * PRICE_PER_MILLION.input + outputTokens * PRICE_PER_MILLION.output) / 1_000_000;

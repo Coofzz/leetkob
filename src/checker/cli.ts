@@ -8,12 +8,12 @@
 // configuration, so it runs the same way on a held-out set.
 //
 // Without MODEL_OFF=1 it calls the model for the semantic constraints. Environment: LLM_API_KEY (required),
-// LLM_MODEL (default gemini-2.5-flash), LLM_TIMEOUT_MS (default 60000), LLM_MIN_INTERVAL_MS (pause between
+// LLM_MODEL (default gemini-3.6-flash), LLM_TIMEOUT_MS (default 60000), LLM_MIN_INTERVAL_MS (pause between
 // calls, for a provider rate limit; default 0). --calls appends one line per model call.
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { appendCall } from './call-log.ts';
+import { appendCall, DEFAULT_MODEL } from './call-log.ts';
 import { createGeminiClient } from './gemini.ts';
 import { createReview } from './review.ts';
 import { createSemanticReview } from './semantic.ts';
@@ -62,7 +62,7 @@ export async function main(argv: string[], env: NodeJS.ProcessEnv = process.env)
         createSemanticReview({
           client: createGeminiClient({
             apiKey: env.LLM_API_KEY ?? '',
-            model: env.LLM_MODEL || 'gemini-2.5-flash',
+            model: env.LLM_MODEL || DEFAULT_MODEL,
             timeoutMs: Number(env.LLM_TIMEOUT_MS) || 60_000,
           }),
           timeoutMs: Number(env.LLM_TIMEOUT_MS) || 60_000,

@@ -136,3 +136,23 @@ CONNECTED (no `--network none`), the 1 GiB sum (no `--memory`), UNLIMITED (no `-
 (`--user 0`), SOCKET (Docker socket mounted) and LEAK (`-e LLM_API_KEY=...`).
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45121373922 · green run:
 https://github.com/Coofzz/leetkob/actions/runs/45121938292
+
+## 2026-11-23 — hard rules for ban-list constraints (PR #10)
+Tool: Claude Code.
+Asked for: tests first, from snippets written for the test file only (no dev-set code), covering obvious
+uses, disguised ones and traps; then a lexer and a name resolver that make them pass without editing them.
+Kept: 27 tests in `test/unit/hard-rules.test.ts`; `src/checker/lexer.ts` and `src/checker/hard-rules.ts`.
+Banned names are read from the backticks of the constraint text; nothing names a problem or a file.
+Changed: the first version failed `npm run typecheck` (`noUncheckedIndexedAccess` on the exponent case of
+the number lexer) although every test passed; running all five checks, not only the tests, caught it.
+Decided (by me): an unqualified call to a std name that the student did not declare counts as a use even
+without `using namespace std`, because the code compiles, so the call must reach the library (argument-
+dependent lookup). The student's own function or variable with a banned name is never a use, even with
+`using namespace std`; a using-declaration that is never called is not a use either. Both lean towards pass.
+Known gaps: a name built by token pasting (`##`) in a macro, a banned name reached through a template
+parameter or a function pointer passed in from elsewhere, and a declaration the resolver does not recognise
+(it then treats a call as the student's own and says pass).
+Dev set with the model off (throw-away script, until the checker command exists): 0 wrongful deductions; all
+55 ban-list pairs decided, none `unsure`; all 15 ban-list violations caught with a labelled line. The
+other 22 misses and the 47 `unsure` are the semantic constraints, which the model decides.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45123450482

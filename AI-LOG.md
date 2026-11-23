@@ -351,3 +351,21 @@ Asked for: the default model in one place (`DEFAULT_MODEL`), the price updated, 
 the cost test changed first (its own commit) because it pinned the old price.
 Clarified: the model I chat with in Claude Code (Claude Opus 5.5) is not the product model. The product
 calls the Gemini API with our own key on the free tier; the Claude API has no free tier.
+
+## 2026-11-23 — the committed dev-set run with the real model (PR #22)
+Tool: Claude Code (ran the checker and checked the call log; the key stayed in `.env`, which it never read).
+Run: `gemini-3.6-flash`, 47 solutions, one call per solution that still had a semantic constraint after the
+hard rules (39 calls; the 8 `reverse-recursive` solutions needed none). Result, kept as it came out:
+0 wrongful deductions, recall 64.9% (24/37), unsure 21.6% (22/102).
+What went wrong: only 18 calls were answered. From the 21st request on, Google answered 429; a probe printed
+the reason: "Generate content requests per day limit exceeded on Free Tier … limit: 20 … retry in 21h53m".
+The free tier of this model allows 20 requests per day per project, and a full run needs 39. One more call
+timed out and one got 503. Every refused call became `unsure` (`model-error` or `timeout`), never a verdict,
+which is why there are still no wrongful deductions; most of the missed violations are those 21 calls.
+Decided (by me, 2026-11-23): commit this run instead of spreading a re-run over two days' quota, and stay on
+the free tier (0 USD) rather than enable billing; README and the run's README say what that means: one lab
+of 80 would need four days of free quota.
+Checked in the call log: all 18 answered calls carry the provider's request id and model; no prompt contains
+a comment or a ban-list constraint; each call lists the constraint a hard rule decided in
+`skippedByHardRules`. Cost arithmetic (README): 852.9 input + 657.7 output tokens per call → 0.0031 USD per
+call → 0.25 USD per lab of 80 at the paid price.

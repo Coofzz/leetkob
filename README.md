@@ -69,6 +69,11 @@ docker run --rm --network none -e MODEL_OFF=1 -v "$PWD/leetkob-eval:/data:ro" le
 `npm run sandbox:build` builds the judging image; `npm run test:sandbox` runs one attack submission per
 sandbox minimum against it (needs Docker). CI runs both in the `sandbox` job.
 
+## Deployment
+
+One Ubuntu VM with Docker: Caddy for HTTPS, the API and the worker as systemd services, each under its
+own user. Step by step, with the checks to run afterwards: [`docs/deploy.md`](docs/deploy.md).
+
 ## Model and spending cap
 
 The constraint review (PA#3) calls Google Gemini `gemini-2.5-flash` through the Gemini API.

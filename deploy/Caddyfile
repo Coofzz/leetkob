@@ -1,0 +1,15 @@
+# HTTPS in front of the API. deploy/install.sh replaces LEETKOB_DOMAIN with the real name
+# (a domain, or <ip>.sslip.io when there is none) and installs this as /etc/caddy/Caddyfile.
+LEETKOB_DOMAIN {
+	encode gzip
+	# A lab body may be up to 8 MiB (docs/contract/post-class-labs.md); Caddy stops anything far larger.
+	request_body {
+		max_size 9MB
+	}
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+	reverse_proxy 127.0.0.1:3000
+}

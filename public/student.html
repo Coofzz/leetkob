@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LeeTKOB — student</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LeeTKOB · Student</h1>
+      <div id="who"></div>
+    </header>
+    <main>
+      <section>
+        <h2>My labs</h2>
+        <div id="labs" class="muted">Loading…</div>
+      </section>
+
+      <section id="lab-section" hidden>
+        <h2 id="lab-title"></h2>
+        <p id="lab-meta" class="muted"></p>
+        <pre id="lab-statement" class="statement"></pre>
+        <h2>Constraints</h2>
+        <div id="lab-constraints"></div>
+        <p class="notice">
+          How your code is reviewed: after it passes every test, the constraints are checked first by hard
+          rules (an exact check of the names you use) and then by a language model. The model receives only
+          the statement, the constraints and your code with all comments removed — never your name or student
+          ID. The model never decides a mark: a TA reviews every finding before marks are published.
+        </p>
+      </section>
+
+      <section id="submit-section" hidden>
+        <h2>Submit</h2>
+        <form id="submit-form">
+          <label for="code-file">C++ file (optional — or paste below)</label>
+          <input id="code-file" type="file" accept=".cpp,.cc,.cxx,.h,.txt" />
+          <label for="code">Code</label>
+          <textarea id="code" spellcheck="false" required></textarea>
+          <button type="submit">Submit</button>
+        </form>
+        <div id="submit-message"></div>
+      </section>
+
+      <section id="mine-section" hidden>
+        <h2>My submissions</h2>
+        <div id="mine"></div>
+      </section>
+
+      <section id="result-section" hidden>
+        <h2 id="result-title"></h2>
+        <div id="result"></div>
+      </section>
+    </main>
+    <script src="common.js"></script>
+    <script src="student.js"></script>
+  </body>
+</html>

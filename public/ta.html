@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LeeTKOB — TA</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LeeTKOB · TA</h1>
+      <div id="who"></div>
+    </header>
+    <main>
+      <section>
+        <h2>Labs of my classes</h2>
+        <div id="labs" class="muted">Loading…</div>
+      </section>
+
+      <section>
+        <h2>Create a lab</h2>
+        <form id="create-form">
+          <div class="row">
+            <div>
+              <label for="class-id">Class id</label>
+              <input id="class-id" type="number" min="1" required />
+            </div>
+            <div>
+              <label for="deadline">Deadline (your local time)</label>
+              <input id="deadline" type="datetime-local" required />
+            </div>
+          </div>
+          <label for="title">Title</label>
+          <input id="title" maxlength="200" required />
+          <label for="statement">Statement (Markdown)</label>
+          <textarea id="statement" required></textarea>
+          <div class="row">
+            <div>
+              <label for="cpu">CPU per test (ms, 1000–5000)</label>
+              <input id="cpu" type="number" min="1000" max="5000" value="1000" />
+            </div>
+            <div>
+              <label for="memory">Memory (MB, 64–512)</label>
+              <input id="memory" type="number" min="64" max="512" value="256" />
+            </div>
+          </div>
+          <label for="tests">Tests: select the .in and .out files together (01.in + 01.out, …)</label>
+          <input id="tests" type="file" multiple accept=".in,.out,.txt" />
+          <p id="tests-info" class="muted"></p>
+          <label for="constraints">Constraints (JSON: [{"id", "text", "deduction"}])</label>
+          <textarea id="constraints" spellcheck="false"></textarea>
+          <button type="submit">Create lab</button>
+        </form>
+        <div id="create-message"></div>
+      </section>
+
+      <section id="queue-section" hidden>
+        <h2 id="queue-title"></h2>
+        <p id="queue-meta" class="muted"></p>
+        <div id="queue"></div>
+      </section>
+
+      <section id="submission-section" hidden>
+        <h2 id="submission-title"></h2>
+        <div id="submission"></div>
+      </section>
+    </main>
+    <script src="common.js"></script>
+    <script src="ta.js"></script>
+  </body>
+</html>

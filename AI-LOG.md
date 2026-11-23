@@ -269,3 +269,16 @@ the student, while the same submission read by the TA has them.
 Decided (by me): a student sees their own code; output over the limit is shown as `runtime_error` for
 everyone (FAQ-05), while the database keeps `output_limit` for the logs.
 Red run (contract and tests only): https://github.com/Coofzz/leetkob/actions/runs/45139468812
+
+## 2026-11-23 — the TA's review queue (PR #17)
+Tool: Claude Code.
+Asked for: the contract `get-lab-review-queue.md` first, contract tests from it (copied in by me, as before),
+then the endpoint: only counted submissions (FAQ-02), every violation and unsure, ceil(10%) of the passes
+at random (FAQ-10), the TA's deduction and the unsure reason (FAQ-09), and no publish endpoint.
+Kept: the contract, 10 contract tests, `src/review-queue.ts`, migration 005 (`sample_rank`).
+Changed: the first version gave each verdict its random rank with `abs(random())`; six tests answered 500
+with `RangeError: Value is too large to be represented as a JavaScript number`, because SQLite's random
+integers go up to 2^63 and `node:sqlite` will not read past 2^53 as a number. The rank is now below 10^9.
+Decided (by me): a student of the class gets 403 (they know the lab exists), anyone outside the class 404,
+as in the ADR; the sample is random but stored, so a TA who reloads the page sees the same sample.
+Red run (contract and tests only): https://github.com/Coofzz/leetkob/actions/runs/45142136900

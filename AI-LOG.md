@@ -317,3 +317,20 @@ the model); dev set unchanged: 0 wrongful, 15/15 ban-list violations caught.
 Also: a single shell command that edited the file was refused by Claude Code's safety check because it
 could not parse the quoting; the same change went in through the editor instead.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45146278181
+
+## 2026-11-23 — deployment, written before the VM exists (PR #20)
+Tool: Claude Code.
+Asked for: everything needed to deploy on one Ubuntu 24.04 VM, following ADR §15: API and worker as systemd
+services on the host (no container gets the Docker socket), Caddy for HTTPS, the key only where it is used.
+Kept: `deploy/install.sh`, `deploy/update.sh`, two hardened systemd units, the Caddyfile, environment
+templates without secrets, `docs/deploy.md`; `HOST` in `src/server.ts` so the API listens on 127.0.0.1.
+Decided (by me): two system users. `leetkob-api` has no Docker access and no key (the API never calls the
+model); `leetkob-worker` is in the docker group and is the only reader of the key. Being in the docker group
+is as strong as root, which the guide says plainly; the worker is not reachable from the network.
+Found while writing it: the API and the worker start together after a deployment and both run migrations;
+each read the list of applied migrations before taking the write lock. A test with four processes opening a
+new database failed every time on Windows; on the Ubuntu CI runner the same test passed against the old
+code, so it catches the race only when the timing lines up. The fix (lock first, then check) is in its own
+commit; the test passes on both.
+Not done yet: none of this has run on a real server. The VM, the domain and a check of `docker info` for
+swap limits come next.

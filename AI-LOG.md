@@ -295,6 +295,6 @@ Changed: two slips caught by the checks before the commit: ESLint flagged a vari
 read; and a regex the assistant wrote through a shell lost its backslash (`/\s+/` became `/s+/`), so the
 "FAQ-06 notice" test failed. Prettier had wrapped "hard rules" over two lines, so the test now reads the page
 with whitespace collapsed, as a browser does.
-Not checked by a test: what the screens do in a browser. I clicked through the flow by hand after merging
-(see PA3.md).
+Not checked by a test: what the screens do in a browser. Still to do by hand before the tag: sign in as a TA,
+create a lab, sign in as a student, submit, watch the result, open the review queue.
 Red run (contract and tests only): https://github.com/Coofzz/leetkob/actions/runs/45143665015

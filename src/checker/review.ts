@@ -4,7 +4,10 @@ import type { ConstraintResult, ReviewFn, ReviewInput } from '../types.ts';
 import { decideBanList } from './hard-rules.ts';
 
 /** Decides semantic constraints with the model, behind its schema check and timeout. */
-export type SemanticReview = (input: ReviewInput) => Promise<ConstraintResult[]>;
+export type SemanticReview = (
+  input: ReviewInput,
+  info?: { skippedByHardRules?: string[] },
+) => Promise<ConstraintResult[]>;
 
 const unsure = (constraint: string, unsureReason: ConstraintResult['unsureReason']): ConstraintResult => ({
   constraint,
@@ -35,7 +38,10 @@ export function createReview(semantic?: SemanticReview): ReviewFn {
         for (const c of forModel) decided.set(c.id, unsure(c.id, 'model-off'));
       } else {
         if (!semantic) throw new Error('no model client is configured; run with MODEL_OFF=1');
-        const answers = await semantic({ ...input, constraints: forModel });
+        const answers = await semantic(
+          { ...input, constraints: forModel },
+          { skippedByHardRules: [...decided.keys()] },
+        );
         for (const c of forModel) {
           decided.set(c.id, answers.find((a) => a.constraint === c.id) ?? unsure(c.id, 'schema'));
         }

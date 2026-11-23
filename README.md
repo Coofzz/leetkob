@@ -45,6 +45,17 @@ node leetkob-eval/eval.mjs --data leetkob-eval --predictions predictions.jsonl
 `MODEL_OFF=1` runs the hard rules only: every ban-list constraint is decided, every semantic constraint
 is `unsure`, and no network connection is opened. Without `--out` the predictions go to stdout.
 
+Without `MODEL_OFF=1` the semantic constraints go to the model (`LLM_API_KEY`, `LLM_MODEL`,
+`LLM_TIMEOUT_MS`, `LLM_MIN_INTERVAL_MS` from the environment; `node --env-file=.env` loads `.env`).
+The answer must pass a schema check and arrive before the timeout, or the constraint is `unsure` with
+the reason (`schema`, `timeout`, `evidence-mismatch`, `model-error`, `model-unsure`). `--calls <file>`
+appends one line per model call: the provider's request id, model, tokens, time, cost and the prompt.
+
+```bash
+node --env-file=.env --import tsx src/checker/cli.ts --data leetkob-eval \
+  --out predictions.jsonl --calls calls.jsonl
+```
+
 The same command as an image, with no network:
 
 ```bash

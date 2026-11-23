@@ -1,17 +1,25 @@
 // The checker command: one command line takes a dataset folder (the layout of leetkob-eval/) and writes
 // one prediction line per (solution, constraint), as leetkob-eval/README.md specifies.
 //
-//   npm run checker -- --data <dir> [--out <file>]        (no --out: the predictions go to stdout)
+//   npm run checker -- --data <dir> [--out <file>] [--calls <calls.jsonl>]   (no --out: stdout)
 //   MODEL_OFF=1 npm run checker -- --data leetkob-eval    hard rules only, no network
 //
 // It reads statement.md and constraints.json only. It never reads labels.jsonl and has no per-problem
 // configuration, so it runs the same way on a held-out set.
+//
+// Without MODEL_OFF=1 it calls the model for the semantic constraints. Environment: LLM_API_KEY (required),
+// LLM_MODEL (default gemini-2.5-flash), LLM_TIMEOUT_MS (default 60000), LLM_MIN_INTERVAL_MS (pause between
+// calls, for a provider rate limit; default 0). --calls appends one line per model call.
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { appendCall } from './call-log.ts';
+import { createGeminiClient } from './gemini.ts';
 import { createReview } from './review.ts';
+import { createSemanticReview } from './semantic.ts';
 
-const USAGE = 'usage: [MODEL_OFF=1] npm run checker -- --data <dataset dir> [--out <predictions.jsonl>]';
+const USAGE =
+  'usage: [MODEL_OFF=1] npm run checker -- --data <dataset dir> [--out <predictions.jsonl>] [--calls <calls.jsonl>]';
 
 interface Prediction {
   solution: string;
@@ -20,13 +28,14 @@ interface Prediction {
   evidence: { line: number; text: string }[];
 }
 
-function parseArgs(argv: string[]): { data?: string; out?: string } | null {
-  const args: { data?: string; out?: string } = {};
+function parseArgs(argv: string[]): { data?: string; out?: string; calls?: string } | null {
+  const args: { data?: string; out?: string; calls?: string } = {};
   for (let i = 0; i < argv.length; i += 2) {
     const value = argv[i + 1];
     if (value === undefined) return null;
     if (argv[i] === '--data') args.data = value;
     else if (argv[i] === '--out') args.out = value;
+    else if (argv[i] === '--calls') args.calls = value;
     else return null;
   }
   return args;
@@ -41,12 +50,28 @@ export async function main(argv: string[], env: NodeJS.ProcessEnv = process.env)
     return 2;
   }
   const modelOff = env.MODEL_OFF === '1';
-  if (!modelOff) {
-    // The model client arrives in its own change; until then the checker runs the hard rules only.
-    console.error('the model is not wired into the checker yet: run with MODEL_OFF=1');
+  if (!modelOff && !env.LLM_API_KEY) {
+    console.error('LLM_API_KEY is not set: put it in the environment, or run with MODEL_OFF=1');
     return 2;
   }
-  const review = createReview();
+  let solution = ''; // the submission being reviewed, for the call log
+  const callsFile = args.calls;
+  const review = modelOff
+    ? createReview()
+    : createReview(
+        createSemanticReview({
+          client: createGeminiClient({
+            apiKey: env.LLM_API_KEY ?? '',
+            model: env.LLM_MODEL || 'gemini-2.5-flash',
+            timeoutMs: Number(env.LLM_TIMEOUT_MS) || 60_000,
+          }),
+          timeoutMs: Number(env.LLM_TIMEOUT_MS) || 60_000,
+          onCall: (entry) => {
+            if (callsFile) appendCall(callsFile, { submission: solution, ...entry });
+          },
+        }),
+      );
+  const pauseMs = modelOff ? 0 : Number(env.LLM_MIN_INTERVAL_MS) || 0;
 
   const predictions: Prediction[] = [];
   const problems = readdirSync(join(args.data, 'problems')).sort();
@@ -64,6 +89,8 @@ export async function main(argv: string[], env: NodeJS.ProcessEnv = process.env)
       .filter((f) => f.endsWith('.cpp'))
       .sort();
     for (const file of files) {
+      solution = `${problem}/${file.replace(/.cpp$/, '')}`;
+      if (pauseMs > 0 && predictions.length > 0) await new Promise((r) => setTimeout(r, pauseMs));
       const source = readFileSync(join(solutionsDir, file), 'utf8');
       const results = await review(
         { statement, constraints: constraints.map((c) => ({ id: c.id, text: c.text })), source },

@@ -8,6 +8,7 @@ export const PROBLEMS = {
   'invalid-json': { status: 400, title: 'Malformed JSON' },
   validation: { status: 400, title: 'Invalid request' },
   unauthenticated: { status: 401, title: 'Authentication required' },
+  forbidden: { status: 403, title: 'Forbidden' },
   'not-found': { status: 404, title: 'Not found' },
   'idempotency-key-missing': { status: 400, title: 'Idempotency-Key required' },
   'code-too-large': { status: 413, title: 'Code too large' },

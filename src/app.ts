@@ -5,6 +5,7 @@ import { submissionsRouter } from './submissions.ts';
 import { loginRouter } from './auth.ts';
 import { labsRouter } from './labs.ts';
 import { submissionsReadRouter } from './submissions-read.ts';
+import { reviewQueueRouter } from './review-queue.ts';
 
 export function createApp(db: DatabaseSync) {
   const app = express();
@@ -21,6 +22,7 @@ export function createApp(db: DatabaseSync) {
   app.use(loginRouter(db));
   app.use(labsRouter(db));
   app.use(submissionsReadRouter(db));
+  app.use(reviewQueueRouter(db));
 
   app.use((req: Request, res: Response) => {
     sendProblem(res, 'not-found', `No endpoint for ${req.method} ${req.path}`);

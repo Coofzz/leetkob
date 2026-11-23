@@ -234,3 +234,23 @@ Checked: 41 contract tests (24 from PA#2, 17 new), 61 unit tests, lint, format, 
 migration of 003 restores the PA#2 columns and tables exactly; `npm run accounts` run twice on the same
 database gives the same accounts and memberships.
 Red run (contracts and tests only): https://github.com/Coofzz/leetkob/actions/runs/45136020905
+
+## 2026-11-23 — job queue and a separate worker (PR #15)
+Tool: Claude Code.
+Asked for: tests first, with a fake judge and a fake review, for the rubric's check (stop the worker, submit,
+start it, judged exactly once), a worker dying half-way, two workers at once, a job that keeps failing, and
+FAQ-02 (review only the latest Accepted submission); then migration 004, the queue and the worker.
+Kept: `migrations/004_jobs_results.*`, `src/queue.ts`, `src/worker.ts`, the job inserted in the same
+transaction as the submission, `busy_timeout` and WAL in `db.ts` because two processes share the file.
+Changed: one test of mine failed although the values were right: `node:sqlite` returns rows with a null
+prototype, so `deepStrictEqual` rejected `{status: 'queued', attempts: 0}`. I fixed the comparison in its
+own test commit; it checks the same two values.
+Decided (by me): "exactly once" means one set of results in the database, enforced by primary keys and
+`ON CONFLICT DO NOTHING`, and a retried job reuses the stored judge result instead of judging again; the
+lease is 2 minutes and a job gives up after 3 attempts (the submission shows `system_error`).
+Checked by hand, with the real sandbox: API and worker as two processes on one database file; with the
+worker stopped a student's submission stayed `queued` with no result; the worker started later judged it
+(both tests AC), the hard rule decided C1 and C2 was `unsure` (`model-off`), attempts 1, no container left;
+a second worker started afterwards judged nothing again. Stopping the worker with `kill -INT` from Git Bash
+did not reach the node process on Windows; Ctrl+C in a terminal does.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45137367873

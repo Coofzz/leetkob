@@ -47,11 +47,13 @@ const count = (sql: string, ...args: (number | string)[]) =>
   Number((srv.db.prepare(sql).get(...args) as { n: number }).n);
 const statusOf = (id: number) =>
   (srv.db.prepare('SELECT status FROM submissions WHERE id = ?').get(id) as { status: string }).status;
-const jobOf = (id: number) =>
-  srv.db.prepare('SELECT status, attempts FROM jobs WHERE submission_id = ?').get(id) as {
+// node:sqlite rows have a null prototype; copy into a plain object so deepEqual compares values only.
+const jobOf = (id: number) => ({
+  ...(srv.db.prepare('SELECT status, attempts FROM jobs WHERE submission_id = ?').get(id) as {
     status: string;
     attempts: number;
-  };
+  }),
+});
 
 function counting(judge: JudgeFn = fakeJudge()) {
   let calls = 0;

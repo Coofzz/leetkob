@@ -175,3 +175,25 @@ without `MODEL_OFF=1` (exit 2) instead of writing `unsure` everywhere and lookin
 Checked: `docker run --rm --network none --memory 512m --pids-limit 64 -e MODEL_OFF=1` on the dev set gives
 the same file as the local run; `eval.mjs` exits with 1 (thresholds not met yet), never 2; 0 wrongful.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45128404529
+
+## 2026-11-23 — the model call: de-identification, prompt, Gemini client, call log (PR #12)
+Tool: Claude Code.
+Asked for: tests first, with a fake fetch and no network, for what leaves the system (comments and any
+name in them removed, literals and line numbers kept), the prompt (statement, semantic constraints, numbered
+code, nothing about deductions), the Gemini client (key in a header only, a timeout, no key in any error)
+and the call log; then the code. Not wired into the review yet: the model's output must not reach anything
+before its schema check and timeout exist (next PR).
+Kept: `src/checker/deidentify.ts`, `prompt.ts`, `gemini.ts`, `call-log.ts`, and `scripts/model-smoke.ts`
+for one real call with a self-written snippet.
+Changed: (1) the client first used `AbortSignal.timeout`; five tests were cancelled with "Promise resolution
+is still pending but the event loop has already resolved", because that timer does not keep the process
+alive. It now uses its own timer and clears it. (2) ESLint's `preserve-caught-error` wanted the network
+error attached as `cause`; I kept it out on purpose, because `console.error` prints the cause chain, and
+the line says why.
+Checked against the provider's documentation (read 2026-11-23 through a fetch agent): `responseId`,
+`modelVersion` and the `usageMetadata` token counts exist; paid price 0.30 USD per million input tokens
+and 2.50 per million output tokens, thinking included; the free tier's content may be used to improve
+Google's products. Not confirmed word for word: the request field names for the JSON schema, so our own
+validator stays the check. The pricing page also says `gemini-2.5-flash` is deprecated and its requests go
+to another model from 2026-12-01; the model now comes from `LLM_MODEL`.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45131180859

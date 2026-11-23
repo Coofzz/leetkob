@@ -156,3 +156,22 @@ Dev set with the model off (throw-away script, until the checker command exists)
 55 ban-list pairs decided, none `unsure`; all 15 ban-list violations caught with a labelled line. The
 other 22 misses and the 47 `unsure` are the semantic constraints, which the model decides.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45123450482
+
+## 2026-11-23 — checker command, MODEL_OFF and the checker image (PR #11)
+Tool: Claude Code.
+Asked for: tests first for one command that turns a dataset folder into the prediction file, with
+`MODEL_OFF=1` running the hard rules only and opening no connection; then the command, the `ReviewFn` the
+worker will call, and an image that runs offline.
+Kept: `src/checker/cli.ts`, `src/checker/review.ts`, `docker/checker.Dockerfile`, a `.dockerignore` that
+lets only `package*.json`, `tsconfig.json` and `src/` into the build, and a README section.
+How the tests can fail: the fixture's `labels.jsonl` is a directory, so reading it throws; with
+`MODEL_OFF=1` the test replaces `fetch` and `net.Socket.prototype.connect` with functions that throw; on the
+dev set the test fails if `eval.mjs` exits with 2 or finds a wrongful deduction.
+Changed: the first Dockerfile set an environment variable for tsx's cache that I could not find in tsx's
+documentation; I removed it and checked that the image runs as `node` with `--network none`.
+Decided (by me): without `--out` the predictions go to stdout, so a marker can redirect them and does not
+need a writable mount for the container's user. Until the model client exists the command refuses to run
+without `MODEL_OFF=1` (exit 2) instead of writing `unsure` everywhere and looking like a real run.
+Checked: `docker run --rm --network none --memory 512m --pids-limit 64 -e MODEL_OFF=1` on the dev set gives
+the same file as the local run; `eval.mjs` exits with 1 (thresholds not met yet), never 2; 0 wrongful.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45128404529

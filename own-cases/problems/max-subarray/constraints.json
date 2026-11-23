@@ -1,0 +1,12 @@
+[
+  {
+    "id": "C1",
+    "text": "Do not use a library facility that finds a maximum or a sum for you: `std::max_element`, `std::accumulate`, `std::partial_sum`, `std::reduce`.",
+    "deduction": 2
+  },
+  {
+    "id": "C2",
+    "text": "Run in linear time: look at each number a constant number of times. A solution that tries every subarray, or every pair of start and end, does not satisfy this constraint, even if it passes the tests.",
+    "deduction": 4
+  }
+]

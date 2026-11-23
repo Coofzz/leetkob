@@ -1,0 +1,33 @@
+{
+  "pairs": 102,
+  "passLabels": 65,
+  "violationLabels": 37,
+  "wrongful": 0,
+  "caught": 24,
+  "recall": 0.6486486486486487,
+  "unsure": 22,
+  "unsureRate": 0.21568627450980393,
+  "missing": 0,
+  "thresholds": {
+    "maxWrongful": 0,
+    "minRecall": 0.9,
+    "maxUnsure": 0.2
+  },
+  "pass": false,
+  "wrongfulPairs": [],
+  "missedPairs": [
+    "sort-merge/s04 C2",
+    "sort-merge/s05 C2",
+    "sort-merge/s06 C2",
+    "sort-merge/s07 C2",
+    "sort-merge/s08 C2",
+    "sort-merge/s09 C2",
+    "dynamic-array/s04 C2",
+    "reverse-words/s05 C2",
+    "reverse-words/s06 C2",
+    "reverse-words/s07 C2",
+    "gcd-euclid/s04 C2",
+    "gcd-euclid/s05 C2",
+    "gcd-euclid/s07 C2"
+  ]
+}

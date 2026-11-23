@@ -254,3 +254,18 @@ worker stopped a student's submission stayed `queued` with no result; the worker
 a second worker started afterwards judged nothing again. Stopping the worker with `kill -INT` from Git Bash
 did not reach the node process on Windows; Ctrl+C in a terminal does.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45137367873
+
+## 2026-11-23 — reading a submission (PR #16)
+Tool: Claude Code.
+Asked for: the contract `get-submission.md` first, contract tests from it, then the endpoint: the student
+sees the judge's verdicts but never the tests (FAQ-02) and never a constraint verdict (FAQ-08); a TA of the
+class also sees the review with the deduction they set.
+Kept: the contract, 10 contract tests, `src/submissions-read.ts`.
+How the tests got in: as in PR #14, the assistant wrote the test file outside the repository and I copied it
+into `test/contract/` myself; this time it was already formatted with our Prettier settings.
+How the tests can fail: a secret string is put in a test's input and expected output, and the tests assert
+it never appears in the response; another asserts the word `violation` and the evidence line never reach
+the student, while the same submission read by the TA has them.
+Decided (by me): a student sees their own code; output over the limit is shown as `runtime_error` for
+everyone (FAQ-05), while the database keeps `output_limit` for the logs.
+Red run (contract and tests only): https://github.com/Coofzz/leetkob/actions/runs/45139468812

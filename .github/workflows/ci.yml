@@ -57,3 +57,16 @@ jobs:
         with: { node-version-file: .nvmrc, cache: npm }
       - run: npm ci
       - run: npm run test:contract
+
+  # The dev set must stay byte-for-byte the published one (docs/devset-integrity.md). Windows too,
+  # because Git for Windows converts line endings by default. Zero dependencies, so no npm ci.
+  devset:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc }
+      - run: node scripts/verify-devset.mjs

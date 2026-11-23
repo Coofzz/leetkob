@@ -298,3 +298,22 @@ with whitespace collapsed, as a browser does.
 Not checked by a test: what the screens do in a browser. Still to do by hand before the tag: sign in as a TA,
 create a lab, sign in as a student, submit, watch the result, open the review queue.
 Red run (contract and tests only): https://github.com/Coofzz/leetkob/actions/runs/45143665015
+
+## 2026-11-23 — own cases, and a hard-rule bug they found (PR #19)
+Tool: Claude Code.
+Asked for: tests first (layout, labels, at least one trap and one injection, every solution Accepted by our
+own judge, no wrongful deduction with the model off), then a problem that is not in the dev set
+(`max-subarray`) with six solutions written for it, labelled with evidence lines.
+Kept: `own-cases/` (statement, constraints, 4 tests, s01–s06, `labels.jsonl`, README), the unit test and a
+sandbox test that judges every solution in CI.
+Found: with the model off, s03 (a macro around `*max_element(...)` and `using namespace std`) was scored
+`pass` for C1. The resolver read `* name (` as a declaration such as `int *f(`, so it took `max_element`
+for the student's own function. A wrongful pass, not a wrongful deduction, but exactly the "disguised" case
+the rule exists for, and nothing in the dev set had shown it. I had a self-written test reproduce it first
+(plus a trap: a student's own pointer-returning `max_element` stays a pass), then the rule was fixed: a `*`
+or `&` counts as part of a declaration only after a type.
+Checked: own cases with the model off: 0 wrongful, both C1 violations caught (the two C2 violations are for
+the model); dev set unchanged: 0 wrongful, 15/15 ban-list violations caught.
+Also: a single shell command that edited the file was refused by Claude Code's safety check because it
+could not parse the quoting; the same change went in through the editor instead.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45146278181

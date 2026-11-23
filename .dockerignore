@@ -1,0 +1,6 @@
+# Build context of docker/checker.Dockerfile: allow only what the checker needs.
+*
+!package.json
+!package-lock.json
+!tsconfig.json
+!src/

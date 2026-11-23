@@ -31,6 +31,33 @@ npm start                 # http://localhost:3000/health
 `.github/workflows/ci.yml` runs each of these as its own job on every pull request. `main` is
 protected: all five jobs are required, and nothing is pushed to `main` directly.
 
+## Checker — constraint review on a dataset folder
+
+One command takes a folder laid out like `leetkob-eval/` and writes one prediction line per
+(solution, constraint), the format `leetkob-eval/README.md` describes. It reads `statement.md` and
+`constraints.json` only — never `labels.jsonl` — so it runs the same way on any dataset.
+
+```bash
+MODEL_OFF=1 npm run checker -- --data leetkob-eval --out predictions.jsonl
+node leetkob-eval/eval.mjs --data leetkob-eval --predictions predictions.jsonl
+```
+
+`MODEL_OFF=1` runs the hard rules only: every ban-list constraint is decided, every semantic constraint
+is `unsure`, and no network connection is opened. Without `--out` the predictions go to stdout.
+
+The same command as an image, with no network:
+
+```bash
+npm run checker:build          # docker build -f docker/checker.Dockerfile -t leetkob-checker .
+docker run --rm --network none -e MODEL_OFF=1 -v "$PWD/leetkob-eval:/data:ro" leetkob-checker \
+  --data /data > predictions.jsonl
+```
+
+## Judging sandbox
+
+`npm run sandbox:build` builds the judging image; `npm run test:sandbox` runs one attack submission per
+sandbox minimum against it (needs Docker). CI runs both in the `sandbox` job.
+
 ## Model and spending cap
 
 The constraint review (PA#3) calls Google Gemini `gemini-2.5-flash` through the Gemini API.

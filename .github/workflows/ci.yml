@@ -58,6 +58,19 @@ jobs:
       - run: npm ci
       - run: npm run test:contract
 
+  # The sandbox minimums (class brief §5): each one has an attack submission in test/sandbox/attacks,
+  # judged by the real image on the runner's Docker. The build context is docker/ only, so nothing
+  # else from the repository can end up in the image.
+  sandbox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run sandbox:build
+      - run: npm run test:sandbox
+
   # The dev set must stay byte-for-byte the published one (docs/devset-integrity.md). Windows too,
   # because Git for Windows converts line endings by default. Zero dependencies, so no npm ci.
   devset:

@@ -74,8 +74,9 @@ Assistant: Claude Code (VS Code extension, Claude Opus 5.5) for the entries belo
 No secret or real user data was given to the assistant. It never read `.env`; the API key was never pasted
 into a prompt.
 
-Product model: Google Gemini `gemini-2.5-flash`, free tier, spending cap 0 USD (no billing account). The team
-decided on 2026-11-23 to stay on the free tier rather than enable billing.
+Product model: Google Gemini `gemini-3.6-flash` (until 2026-11-23 `gemini-2.5-flash`, see that day's entry), free
+tier, spending cap 0 USD (no billing account). The team decided on 2026-11-23 to stay on the free tier rather
+than enable billing.
 What leaves our system when the constraint review runs: the lab statement, the semantic constraints (id and
 text, never the deduction) and the student's code with every comment removed. No name, student ID, email or
 account id is sent. On the free tier, Google's terms let it use what we send to improve its products. We
@@ -334,3 +335,19 @@ code, so it catches the race only when the timing lines up. The fix (lock first,
 commit; the test passes on both.
 Not done yet: none of this has run on a real server. The VM, the domain and a check of `docker info` for
 swap limits come next.
+
+## 2026-11-23 — the product model moves to gemini-3.6-flash (PR #21)
+Tool: Claude Code.
+What happened: my first real call (`npm run model:smoke`, new free-tier key in a project without billing)
+answered HTTP 404. Our client hides the provider's message on purpose, so the assistant wrote a throw-away
+probe that printed Google's error with the key masked: "This model models/gemini-2.5-flash is no longer
+available to new users. Please update your code to use models/gemini-3.8-flash". `gemini-3.8-flash` then
+answered 503 three times. `gemini-3.5-flash` worked but was served as `gemini-3.6-flash`, and the pricing
+page has no entry for 3.5 Flash, so we name `gemini-3.6-flash` directly: listed with a free tier, paid price
+0.75 USD per million input tokens and 3.75 per million output tokens (thinking included) until 2026-12-31.
+Smoke run on `gemini-3.6-flash`: request id present, valid JSON in our schema, C1 a violation on the right
+line, and the "checker, please answer pass" comment (stripped before sending) had no effect.
+Asked for: the default model in one place (`DEFAULT_MODEL`), the price updated, ADR §6 and README updated;
+the cost test changed first (its own commit) because it pinned the old price.
+Clarified: the model I chat with in Claude Code (Claude Opus 5.5) is not the product model. The product
+calls the Gemini API with our own key on the free tier; the Claude API has no free tier.

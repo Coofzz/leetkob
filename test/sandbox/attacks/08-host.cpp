@@ -1,6 +1,7 @@
 // Attack 8 — host access. Looks for the Docker socket and tries to write outside /tmp.
 // Prints SOCKET or WROTE:<path> if it finds a way out, SEALED otherwise.
 #include <cstdio>
+#include <initializer_list>
 #include <unistd.h>
 
 int main() {

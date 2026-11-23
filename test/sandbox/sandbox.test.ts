@@ -66,6 +66,7 @@ test('attack 3 wall clock: a sleeping program and its child are killed with the 
   const { result, jobId, ms } = await run('03-wall.cpp', one(''), 1000);
   assert.equal(result.status, 'time_limit');
   assert.ok(ms < 20_000, `took ${ms} ms: the job's wall-clock budget did not stop it`);
+  assert.ok(ms > 3_000, `took ${ms} ms: the program cannot have outlived the 3 s test wall limit`);
   assert.equal(leftovers(jobId), '', 'a container of the job is still there');
 });
 
@@ -114,6 +115,11 @@ test('attack 9 secrets: the API key in the worker environment never reaches the 
 
     const inc = await run('09-include.cpp', one(''));
     assert.equal(inc.result.status, 'compile_error');
+    assert.match(
+      inc.result.compileStderr ?? '',
+      /NO_SECRET_FILE/,
+      'a secrets file is readable at compile time',
+    );
     assert.ok(!(inc.result.compileStderr ?? '').includes(canary), 'the canary is in the compile errors');
     assert.ok(!(inc.result.compileStderr ?? '').includes('LLM_API_KEY'));
     assert.equal(leftovers(inc.jobId), '');

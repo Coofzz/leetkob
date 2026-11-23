@@ -151,8 +151,9 @@ test('the client refuses to start without a key', () => {
 // ── The call log ─────────────────────────────────────────────────────────────
 
 test('cost uses the paid price per million tokens, input and output apart', () => {
-  // 1000 input tokens and 200 output tokens at 0.30 and 2.50 USD per million.
-  assert.equal(costUsd(1000, 200), 0.0008);
+  // gemini-3.6-flash, paid tier until 2026-12-31: 1000 input tokens at 0.75 and 200 output tokens at 3.75
+  // USD per million = 0.00075 + 0.00075.
+  assert.equal(costUsd(1000, 200), 0.0015);
 });
 
 test('every call is one JSONL line with the provider request id, tokens, time, cost and the prompt', () => {
@@ -180,7 +181,7 @@ test('every call is one JSONL line with the provider request id, tokens, time, c
     .map((l) => JSON.parse(l) as Record<string, unknown>);
   assert.equal(lines.length, 2);
   assert.equal(lines[0]?.requestId, 'resp-1');
-  assert.equal(lines[0]?.costUsd, 0.0008);
+  assert.equal(lines[0]?.costUsd, 0.0015);
   assert.deepEqual(lines[0]?.skippedByHardRules, ['C1']);
   assert.equal(typeof lines[0]?.at, 'string');
   assert.equal(lines[1]?.outcome, 'timeout');

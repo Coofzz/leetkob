@@ -1,4 +1,8 @@
-# AI-LOG.md — PA#2 Harness and quality gate
+# AI-LOG.md — LeeTKOB
+
+One log for every milestone, oldest first: PA#2 below, then PA#3.
+
+# PA#2 — Harness and quality gate
 
 Team: Trần Thanh An (23120017) · Nguyễn Viết Toàn (23120096) · Nguyễn Thanh Phong (23120154).
 All of PA#2 was done by Nguyễn Viết Toàn; the other two members worked on other assignments this week.
@@ -60,3 +64,53 @@ tests (other class, TA, admin, ownership before the body) and the PR was closed 
 ## 2026-11-11 — PA2.md, this log, self-assessment
 The assistant drafted these three files from the links and notes I sent. By hand: checked every link and
 decided the marks.
+
+# PA#3 — Prototype with the LLM feature running
+
+PA#3 is done by Trần Thanh An alone, as the team agreed on 2026-11-23. An opens and merges each pull request
+after CI is green. "I" below is An.
+
+Assistant: Claude Code (VS Code extension, Claude Opus 5.5) for the entries below.
+No secret or real user data was given to the assistant. It never read `.env`; the API key was never pasted
+into a prompt.
+
+Product model: Google Gemini `gemini-2.5-flash`, free tier, spending cap 0 USD (no billing account). The team
+decided on 2026-11-23 to stay on the free tier rather than enable billing.
+What leaves our system when the constraint review runs: the lab statement, the semantic constraints (id and
+text, never the deduction) and the student's code with every comment removed. No name, student ID, email or
+account id is sent. On the free tier, Google's terms let it use what we send to improve its products. We
+accept that because the statement and constraints are written by the TA for the class, and the code is an
+anonymous lab exercise with its comments stripped. If a class needs more than that, the fix is to enable
+billing; the cost estimate in the README prices it.
+
+## 2026-11-20 to 2026-11-23 — importing the dev set, with an integrity check (PR #6)
+Tool: Claude Code.
+Asked for: put the published dev set (`fithcmus/awad-leetkob-eval` at `552c811`) into the repository
+unchanged, and make it hard for anyone on the team to change it by accident.
+Found: the copy on my Windows machine did not match the published hashes. Git for Windows sets
+`core.autocrlf=true`, which turned LF into CRLF on checkout and also inside `git archive`. The assistant
+traced it by comparing the hashes of `eval.mjs` and `labels.jsonl` with the published ones.
+Kept: `.gitattributes` (`leetkob-eval/** -text`), the manifest `leetkob-eval.sha256`,
+`scripts/verify-devset.mjs`, a pre-commit hook, and a CI job `devset` that runs on Ubuntu and Windows.
+Changed: the script printed with `console.log`, which our `no-console` rule rejects; it now writes to stdout.
+`leetkob-eval/` went into `.prettierignore` and the ESLint ignores: `npm run format` runs on `.` and would
+have rewritten the dev set.
+Rejected: the assistant first created a new, separate repository for PA#3 before I pointed it to this one;
+I deleted that repository and the work came here as PR #6. It also showed me pages 14–16 of the session 6
+PDF as the sandbox slides; the rubric means the slides numbered §14–16 in the footer, PDF pages 18–20.
+
+## 2026-11-23 — architecture decisions, module boundaries (PR #7)
+Tool: Claude Code.
+Asked for: `docs/decisions/pa3-architecture.md` from my plan's table of decisions (context, choice, rejected
+options, risks); the PA#3 Never lines in `CLAUDE.md`; `src/types.ts` and fakes, so that the sandbox, the
+checker and the worker can be built and tested apart.
+Kept: the 16 decisions, `JudgeFn` and `ReviewFn`, `fakeJudge` and `fakeReview` with three unit tests.
+Changed: my plan disagreed with the product owner's FAQ in four places; checking the draft against the FAQ
+caught them, and the ADR follows the FAQ. Output over 1 MB is `RE` for the student (FAQ-05), not a new
+verdict. The worker reviews every Accepted submission that is still the student's latest, instead of
+waiting for the deadline (FAQ-02 allows early review; otherwise the queue would be empty when the flow is
+tried). FAQ-09's "cost cap" reason for `unsure` is left for PA#4: with a 0 USD free tier there is no per-lab
+budget yet. FAQ-01 wants students to join by an invite code or be added by a TA; a bootstrap script stands
+in for now and is listed as a risk.
+Checks: lint, format, typecheck, 5/5 unit tests, 24/24 contract tests, `verify-devset` OK, CI green.
+By hand: the team decisions above; merging PR #6 and PR #7.

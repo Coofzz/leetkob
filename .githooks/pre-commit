@@ -1,0 +1,4 @@
+#!/bin/sh
+# Blocks any commit while leetkob-eval/ differs from the published dev set.
+# Enable once per clone: git config core.hooksPath .githooks
+exec node scripts/verify-devset.mjs

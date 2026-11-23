@@ -3,7 +3,9 @@
 // so each side can be tested with a fake of the other (test/helpers/fakes.ts).
 
 export type Verdict = 'pass' | 'violation' | 'unsure';
-export type UnsureReason = 'model-off' | 'schema' | 'timeout' | 'evidence-mismatch' | 'model-error';
+// FAQ-09: the TA sees why a verdict is unsure. model-unsure: the model itself answered unsure.
+export type UnsureReason =
+  'model-off' | 'model-unsure' | 'schema' | 'timeout' | 'evidence-mismatch' | 'model-error';
 export interface Evidence {
   line: number;
   text: string;
@@ -43,5 +45,7 @@ export interface ConstraintResult {
   evidence: Evidence[];
   source: 'hard-rule' | 'model';
   unsureReason?: UnsureReason;
+  /** The model's one-sentence reason, shown to the TA (FAQ-09). */
+  reason?: string;
 }
 export type ReviewFn = (input: ReviewInput, opts: { modelOff: boolean }) => Promise<ConstraintResult[]>;

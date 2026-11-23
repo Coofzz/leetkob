@@ -197,3 +197,21 @@ Google's products. Not confirmed word for word: the request field names for the 
 validator stays the check. The pricing page also says `gemini-2.5-flash` is deprecated and its requests go
 to another model from 2026-12-01; the model now comes from `LLM_MODEL`.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45131180859
+
+## 2026-11-23 — schema check and timeout on the model, wired into the review (PR #13)
+Tool: Claude Code.
+Asked for: tests first, with a fake model, for every way the answer can be wrong (not JSON, no verdicts,
+an unknown verdict, a deduction or score field, missing or repeated constraints, wrong types, evidence that
+does not match the code) and for a model slower than the timeout; then a hand-written validator and the
+wiring, so that nothing the model says reaches a verdict without passing both.
+Kept: `src/checker/validate.ts`, `src/checker/semantic.ts`; the checker now calls the model without
+`MODEL_OFF=1` and writes the call log with `--calls`.
+Decided (by me): each constraint is checked on its own, so one broken entry does not spoil the others; an
+unknown constraint id is ignored but a missing or repeated one is `unsure`. Evidence is accepted when it
+matches the line the model was shown (comments blanked) and is reported as the original line, because
+`eval.mjs` compares with the original. The review has its own timeout on top of the client's, so a client
+that ignores its abort signal still cannot hold a submission. I added `model-unsure` to the unsure reasons
+and kept the model's one-sentence reason, because FAQ-09 asks that the TA see why a verdict is unsure.
+Changed: nothing the assistant wrote failed a check this time; the 13 new tests passed on the first run of
+the code, and the five checks were green.
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45132498091

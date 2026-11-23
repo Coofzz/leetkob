@@ -114,3 +114,25 @@ budget yet. FAQ-01 wants students to join by an invite code or be added by a TA;
 in for now and is listed as a risk.
 Checks: lint, format, typecheck, 5/5 unit tests, 24/24 contract tests, `verify-devset` OK, CI green.
 By hand: the team decisions above; merging PR #6 and PR #7.
+
+## 2026-11-23 — judging sandbox with nine attack tests (PR #9)
+Tool: Claude Code.
+Asked for: the nine attack submissions and their tests first (CI red), then the judge image and the
+runner, then a CI job that runs the attacks with the real image.
+Kept: `docker/judge.Dockerfile` (g++ and one script, uid 65534, base pinned by digest, build context
+`docker/` only), `src/sandbox/runner.ts` (a compile container and a run container, every flag of slide §16,
+code and tests on stdin as a tar, the docker CLI spawned with `PATH` only, `docker rm -f` when a
+container's wall-clock budget runs out), the CI job `sandbox`.
+Changed: three attacks were weaker than they looked, found when the first run had two failures and one
+suspiciously fast pass. Attack 3 finished in 3.5 s because `timeout` kills the whole process group, so it
+never needed the container kill; its child now calls `setsid()`, and the test checks the job outlived the
+3 s test limit (it now takes about 9 s and is stopped by the container budget). Attack 8 did not compile
+(missing `<initializer_list>`), so it tested nothing. Attack 9 at compile time included `/proc/1/environ`,
+which reads as empty because the kernel reports its size as 0, so it could never leak; it now probes real
+secret-file paths, including our deployment's `/etc/leetkob/env`. These went in a separate test commit
+before the code.
+Checked that the tests can fail: with one protection removed at a time, the same attacks printed
+CONNECTED (no `--network none`), the 1 GiB sum (no `--memory`), UNLIMITED (no `--pids-limit`), ROOT
+(`--user 0`), SOCKET (Docker socket mounted) and LEAK (`-e LLM_API_KEY=...`).
+Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45121373922 · green run:
+https://github.com/Coofzz/leetkob/actions/runs/45121938292

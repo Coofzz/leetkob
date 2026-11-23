@@ -1,0 +1,34 @@
+# The API. Runs as its own user, which is NOT in the docker group and has no model key.
+# Installed by deploy/install.sh to /etc/systemd/system/.
+[Unit]
+Description=LeeTKOB API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=leetkob-api
+Group=leetkob
+WorkingDirectory=/opt/leetkob
+EnvironmentFile=/etc/leetkob/api.env
+ExecStart=/usr/bin/node --import tsx src/server.ts
+Restart=on-failure
+RestartSec=2
+# The database directory is shared with the worker through the leetkob group.
+UMask=0007
+
+# Hardening: read-only system, no new privileges, only the data directory is writable.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/leetkob
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

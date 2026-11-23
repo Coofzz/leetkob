@@ -1,0 +1,36 @@
+# The worker: judges submissions in throw-away containers and calls the model. Its user is in the
+# docker group (it runs `docker run`); no container it starts gets the socket, a mount or a secret
+# (src/sandbox/runner.ts). It is the only process with the model key. Not reachable from the network.
+[Unit]
+Description=LeeTKOB worker
+After=docker.service network-online.target
+Requires=docker.service
+Wants=network-online.target
+
+[Service]
+User=leetkob-worker
+Group=leetkob
+SupplementaryGroups=docker
+WorkingDirectory=/opt/leetkob
+EnvironmentFile=/etc/leetkob/worker.env
+ExecStart=/usr/bin/node --import tsx src/worker.ts
+Restart=on-failure
+RestartSec=2
+UMask=0007
+# SIGTERM: the worker finishes the job in hand, then exits. A job cut short is retried after its lease.
+KillSignal=SIGTERM
+TimeoutStopSec=150
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/leetkob
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

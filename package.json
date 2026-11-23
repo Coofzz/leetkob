@@ -10,6 +10,7 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "dev": "tsx watch src/server.ts",
+    "worker": "tsx src/worker.ts",
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "format": "prettier --write .",

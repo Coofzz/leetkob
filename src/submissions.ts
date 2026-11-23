@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import express, { Router, type NextFunction, type Request, type Response } from 'express';
 import { sendProblem, type FieldError } from './problem.ts';
+import { enqueue } from './queue.ts';
 
 const MAX_BODY = '256kb';
 const MAX_CODE_BYTES = 65_536;
@@ -191,12 +192,13 @@ export function submissionsRouter(db: DatabaseSync) {
       return sendProblem(res, 'deadline-passed', `The deadline of this lab was ${l.deadlineAt}.`);
     }
 
-    // 9. Create the submission and store the key in one transaction.
+    // 9. Create the submission, its judging job and the stored key in one transaction.
     db.exec('BEGIN IMMEDIATE');
     let location: string;
     let text: string;
     try {
       const id = Number(q.insert.run(l.labId, l.caller.id, code, codeBytes, submittedAt).lastInsertRowid);
+      enqueue(db, id, submittedAt); // the worker judges it; this handler never does
       location = `/submissions/${id}`;
       text = JSON.stringify({
         id,

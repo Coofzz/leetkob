@@ -1,0 +1,12 @@
+# Normalize our own text files to LF in the repository and on every OS.
+* text=auto eol=lf
+
+# The published dev set must stay byte-for-byte identical (rubric PA#3, criterion 6).
+# -text: Git never converts line endings here, whatever core.autocrlf says.
+leetkob-eval/** -text
+leetkob-eval.sha256 -text
+
+# Windows-only scripts keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

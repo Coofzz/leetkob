@@ -5,6 +5,7 @@ Constraint review for C++ labs: a wrong deduction costs a real student real mark
 ## Stack
 Node 22 (.nvmrc) + TypeScript run directly with tsx, no build step · Express 5 · SQLite via built-in node:sqlite, no ORM · node:test · ESLint + Prettier + tsc --noEmit.
 Nothing else without asking: no new dependency, framework, ORM or test runner.
+PA#3 adds no dependency: the sandbox is the Docker CLI (image docker/judge.Dockerfile), the queue is a SQLite table, the model is Gemini over REST with fetch, and module boundaries live in src/types.ts.
 
 ## Commands
 npm run lint · npm run format:check · npm run typecheck · npm test · npm run test:contract
@@ -30,6 +31,13 @@ npm run lint · npm run format:check · npm run typecheck · npm test · npm run
 - Push to main, or force-push.
 - Mount a global body parser (`app.use(express.json())`). Parse the body inside the route, after the ownership check. Why: the skeleton had one, so a bad body from another class got invalid-json instead of 404 and leaked that the lab exists; test "§4 ownership is checked before the body" went red in PR #3 (https://github.com/Coofzz/leetkob/pull/3), fixed in commit https://github.com/Coofzz/leetkob/commit/160cfb9.
 - Pipe a check command (`npm test | grep pass`). The pipe keeps the last command's exit code, so the check can never fail. Use `--test-reporter=spec`. Why: while building the skeleton, `npm test | grep "pass"` printed nothing and hid whether the tests had failed; see AI-LOG.md, 2026-11-11.
+
+### Never — PA#3 (constraint review, sandbox, dev set; decisions in docs/decisions/pa3-architecture.md)
+- Edit any file in leetkob-eval/. It is the published dev set and must stay byte-for-byte identical; `node scripts/verify-devset.mjs` and the `devset` CI job check it.
+- Name a dev-set problem or solution (`sort-merge/s05`, `s03.cpp`…) or copy dev-set code into a prompt, a rule or a test. Why: the PA#4 checker is scored on a held-out set with different problems; anything tuned to these names does not carry over.
+- Start the judging container with `-v`, `--mount`, `--privileged`, `--env-file`, `-e`, or the Docker socket, or spawn `docker` with `process.env`. Spawn it with `{ PATH }` only.
+- Write a memory-limit test that allocates without writing and reading the memory back. Why: an untouched allocation is never really committed, so the test passes even with no limit.
+- Commit a "real" dev-set run whose call log lacks the provider's request id for each call.
 
 ## Permissions (enforced in .claude/settings.json)
 - Allowed (local only, undone with one command): the five checks, `npm run format`, `git status`, `git diff`, `git log`.

@@ -10,7 +10,7 @@
 import { hostname } from 'node:os';
 import type { DatabaseSync } from 'node:sqlite';
 import { pathToFileURL } from 'node:url';
-import { appendCall } from './checker/call-log.ts';
+import { appendCall, DEFAULT_MODEL } from './checker/call-log.ts';
 import { createGeminiClient } from './checker/gemini.ts';
 import { createReview } from './checker/review.ts';
 import { createSemanticReview } from './checker/semantic.ts';
@@ -154,7 +154,7 @@ function depsFromEnv(env: NodeJS.ProcessEnv): WorkerDeps {
     createSemanticReview({
       client: createGeminiClient({
         apiKey: env.LLM_API_KEY,
-        model: env.LLM_MODEL || 'gemini-2.5-flash',
+        model: env.LLM_MODEL || DEFAULT_MODEL,
         timeoutMs,
       }),
       timeoutMs,

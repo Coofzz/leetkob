@@ -1,0 +1,25 @@
+{
+  "classes": [
+    { "id": 1, "name": "CSC13114 — class A" },
+    { "id": 2, "name": "CSC13114 — class B" }
+  ],
+  "users": [
+    { "username": "admin", "name": "Admin", "role": "admin", "password": "CHANGE-ME-admin" },
+    { "username": "ta1", "name": "TA One", "role": "ta", "password": "CHANGE-ME-ta1", "classes": [1] },
+    { "username": "ta2", "name": "TA Two", "role": "ta", "password": "CHANGE-ME-ta2", "classes": [2] },
+    {
+      "username": "sv1",
+      "name": "Student One",
+      "role": "student",
+      "password": "CHANGE-ME-sv1",
+      "classes": [1]
+    },
+    {
+      "username": "sv2",
+      "name": "Student Two",
+      "role": "student",
+      "password": "CHANGE-ME-sv2",
+      "classes": [1]
+    }
+  ]
+}

@@ -215,3 +215,22 @@ and kept the model's one-sentence reason, because FAQ-09 asks that the TA see wh
 Changed: nothing the assistant wrote failed a check this time; the 13 new tests passed on the first run of
 the code, and the five checks were green.
 Red run (tests only): https://github.com/Coofzz/leetkob/actions/runs/45132498091
+
+## 2026-11-23 — sign-in, a TA creates a lab, the accounts script (PR #14)
+Tool: Claude Code.
+Asked for: the two contracts first (`post-auth-login.md`, `post-class-labs.md`), then contract tests written
+from them, then migration 003, the two endpoints and a script for the admin to create accounts.
+Kept: both contracts; 17 contract tests; `migrations/003_accounts_labs.*`, `src/passwords.ts`, `src/auth.ts`,
+`src/labs.ts`, `scripts/accounts.ts` and `docs/accounts.example.json`.
+How the tests got in: `.claude/settings.json` denies the assistant any edit under `test/contract/`, the rule
+from PA#2 that stops it weakening a contract test. The assistant wrote the two new files in its scratch
+folder; I read them and copied them in myself, then ran Prettier on them (only formatting changed: trailing
+commas). The PA#2 contract tests were not touched. My first copy failed because I pasted Bash syntax into
+PowerShell; nothing was copied until the PowerShell version.
+Decided (by me): a student of the class gets the same 404 as a stranger when creating a lab (a student has
+no reason to learn which classes have which TAs); each sign-in issues a new token and ends the earlier one;
+the accounts script never creates a lab, because the rubric deducts when a lab needs a seed script.
+Checked: 41 contract tests (24 from PA#2, 17 new), 61 unit tests, lint, format, typecheck; the down
+migration of 003 restores the PA#2 columns and tables exactly; `npm run accounts` run twice on the same
+database gives the same accounts and memberships.
+Red run (contracts and tests only): https://github.com/Coofzz/leetkob/actions/runs/45136020905

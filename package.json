@@ -20,7 +20,8 @@
     "test:sandbox": "tsx --test --test-reporter=spec \"test/sandbox/**/*.test.ts\"",
     "checker": "tsx src/checker/cli.ts",
     "checker:build": "docker build -f docker/checker.Dockerfile -t leetkob-checker .",
-    "model:smoke": "node --env-file=.env --import tsx scripts/model-smoke.ts"
+    "model:smoke": "node --env-file=.env --import tsx scripts/model-smoke.ts",
+    "accounts": "tsx scripts/accounts.ts"
   },
   "dependencies": {
     "express": "^5.3.0"

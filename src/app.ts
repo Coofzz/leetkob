@@ -1,11 +1,27 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
 import type { DatabaseSync } from 'node:sqlite';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { INTERNAL_DETAIL, sendProblem } from './problem.ts';
 import { submissionsRouter } from './submissions.ts';
 import { loginRouter } from './auth.ts';
 import { labsRouter } from './labs.ts';
 import { submissionsReadRouter } from './submissions-read.ts';
 import { reviewQueueRouter } from './review-queue.ts';
+import { labsReadRouter } from './labs-read.ts';
+
+const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
+// The screens load only our own scripts and styles: student code shown on a page can never run.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "img-src 'self' data:",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join('; ');
 
 export function createApp(db: DatabaseSync) {
   const app = express();
@@ -23,6 +39,12 @@ export function createApp(db: DatabaseSync) {
   app.use(labsRouter(db));
   app.use(submissionsReadRouter(db));
   app.use(reviewQueueRouter(db));
+  app.use(labsReadRouter(db));
+  app.use(
+    express.static(PUBLIC, {
+      setHeaders: (res) => res.set({ 'Content-Security-Policy': CSP, 'X-Content-Type-Options': 'nosniff' }),
+    }),
+  );
 
   app.use((req: Request, res: Response) => {
     sendProblem(res, 'not-found', `No endpoint for ${req.method} ${req.path}`);

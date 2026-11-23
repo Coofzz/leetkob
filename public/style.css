@@ -1,0 +1,161 @@
+:root {
+  --fg: #1d2430;
+  --muted: #5b6473;
+  --line: #d9dee7;
+  --bg: #f6f7f9;
+  --card: #fff;
+  --accent: #2557d6;
+  --bad: #b42318;
+  --warn: #b54708;
+  --good: #067647;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font:
+    15px/1.5 system-ui,
+    sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+section {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+h2 {
+  font-size: 16px;
+  margin: 0 0 10px;
+}
+label {
+  display: block;
+  margin: 8px 0 2px;
+  font-weight: 600;
+}
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+textarea {
+  min-height: 140px;
+  font-family: ui-monospace, monospace;
+}
+button {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button.link {
+  background: none;
+  color: var(--accent);
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.muted {
+  color: var(--muted);
+}
+.error {
+  white-space: pre-wrap;
+  color: var(--bad);
+  margin-top: 8px;
+}
+.notice {
+  background: #eef4ff;
+  border: 1px solid #c7d7fe;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+.v-violation,
+.v-WA,
+.v-TLE,
+.v-MLE,
+.v-RE {
+  color: var(--bad);
+  font-weight: 600;
+}
+.v-unsure {
+  color: var(--warn);
+  font-weight: 600;
+}
+.v-pass,
+.v-AC,
+.v-accepted {
+  color: var(--good);
+  font-weight: 600;
+}
+pre.code {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font:
+    13px/1.45 ui-monospace,
+    monospace;
+}
+pre.code .ln {
+  display: inline-block;
+  width: 3em;
+  color: #64748b;
+  user-select: none;
+}
+pre.code .hl {
+  background: #7f1d1d;
+}
+pre.statement {
+  white-space: pre-wrap;
+  font-family: inherit;
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}

@@ -82,4 +82,18 @@ The API key lives only in `.env` (git-ignored) and in no other place. Spending c
 the key belongs to a Google AI Studio project with no billing account, so it can only use the free tier
 and can never be charged. Before PA#3 we will decide whether to enable billing; if we do, a monthly budget
 cap of 5 USD will be set in Google Cloud Billing first.
-Expected cost of one lab (80 submissions): to be measured in PA#3.
+On 2026-11-23 the team decided to stay on the free tier.
+
+**Cost of one lab of 80 submissions**, measured on the committed dev-set run
+([`runs/dev-2026-11-23/`](runs/dev-2026-11-23/README.md)): one model call per counted submission, only for
+the constraints the hard rules leave; on average 852.9 input and 657.7 output tokens per call (output
+includes thinking). At the paid price of `gemini-3.6-flash` until 2026-12-31 (0.75 USD per million input
+tokens, 3.75 per million output tokens):
+
+- one call: (852.9 × 0.75 + 657.7 × 3.75) / 1 000 000 = 0.0031 USD
+- one lab: 80 × 0.0031 = **0.25 USD** (0.50 USD at the 2027 price, 1.50 / 7.50)
+
+On the free tier it costs 0 USD, but Google allows **20 generate requests per day per project** for this
+model: one lab of 80 takes four days of quota, and calls beyond it come back `429` and leave the semantic
+constraints `unsure` in the TA's queue (never a verdict). A class in real use needs billing, with the
+budget cap above.

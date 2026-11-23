@@ -70,6 +70,28 @@ interface Ref {
   definesMacro: boolean;
 }
 
+/**
+ * True when tokens[at] is a * or & that belongs to a declaration (`int *f(`, `T& f(`), not an operator
+ * (`return *f(`, `a * f(`, `&f`). A declarator's * or & follows a type: walk back over further * & &&
+ * and const, then expect a type keyword, the > that closes a template, or a type name at the start of a
+ * statement or a parameter.
+ */
+function pointerDeclarator(tokens: Token[], at: number): boolean {
+  if (!['*', '&', '&&'].includes(tokens[at]?.text ?? '')) return false;
+  let k = at - 1;
+  while (k >= 0 && ['*', '&', '&&', 'const'].includes((tokens[k] as Token).text)) k--;
+  const before = tokens[k];
+  if (!before) return false;
+  if (TYPE_KEYWORDS.has(before.text) || before.text === '>' || before.text === '>>') return true;
+  const beforeType = tokens[k - 1]?.text;
+  return (
+    before.kind === 'ident' &&
+    !KEYWORDS.has(before.text) &&
+    (beforeType === undefined ||
+      [';', '{', '}', '(', ',', '::', '>', 'const', 'static', 'inline'].includes(beforeType))
+  );
+}
+
 function collectRefs(tokens: Token[]): Ref[] {
   const refs: Ref[] = [];
   for (let i = 0; i < tokens.length; i++) {
@@ -96,7 +118,8 @@ function collectRefs(tokens: Token[]): Ref[] {
       prev !== undefined &&
       (TYPE_KEYWORDS.has(prev.text) ||
         DECLARING_KEYWORDS.has(prev.text) ||
-        ['*', '&', '&&', '>', '>>'].includes(prev.text) ||
+        ['>', '>>'].includes(prev.text) ||
+        pointerDeclarator(tokens, i - 1) ||
         (prev.kind === 'ident' && !KEYWORDS.has(prev.text))) &&
       next !== undefined &&
       AFTER_DECLARED_NAME.has(next.text);

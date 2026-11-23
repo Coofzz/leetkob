@@ -391,3 +391,41 @@ test('CRLF line endings give the same lines and the text without the carriage re
   const src = '#include <algorithm>\r\nint main() {\r\n  int a[1] = {1};\r\n  std::sort(a, a + 1);\r\n}\r\n';
   assert.deepEqual(decideBanList(SORT, src)?.evidence, [{ line: 4, text: '  std::sort(a, a + 1);' }]);
 });
+
+test('a dereferenced or address-taken call is a use, not a declaration of the student\u2019s own function', () => {
+  const MAX = 'Do not use `std::max_element`, `std::min_element`.';
+  const deref = code(
+    '#include <algorithm>',
+    '#include <vector>',
+    'using namespace std;',
+    'int top(vector<int>& v) {',
+    '  return *max_element(v.begin(), v.end());',
+    '}',
+  );
+  assert.deepEqual(lines(MAX, deref), [5]);
+  const sum = code(
+    '#include <algorithm>',
+    '#include <vector>',
+    'using namespace std;',
+    'int span(vector<int>& v) {',
+    '  return *max_element(v.begin(), v.end()) - *min_element(v.begin(), v.end());',
+    '}',
+  );
+  assert.deepEqual(lines(MAX, sum), [5]);
+});
+
+test('trap: a function of the student\u2019s that returns a pointer is still the student\u2019s own', () => {
+  const MAX = 'Do not use `std::max_element`.';
+  const src = code(
+    'int* max_element(int* first, int* last) {',
+    '  int* best = first;',
+    '  for (int* p = first; p != last; ++p) if (*p > *best) best = p;',
+    '  return best;',
+    '}',
+    'int main() {',
+    '  int a[3] = {1, 3, 2};',
+    '  return *max_element(a, a + 3);',
+    '}',
+  );
+  assert.equal(verdict(MAX, src), 'pass');
+});

@@ -1,0 +1,10 @@
+DROP TABLE lab_constraints;
+DROP TABLE lab_tests;
+ALTER TABLE labs DROP COLUMN created_at;
+ALTER TABLE labs DROP COLUMN created_by;
+ALTER TABLE labs DROP COLUMN memory_mb;
+ALTER TABLE labs DROP COLUMN cpu_ms;
+ALTER TABLE labs DROP COLUMN statement;
+DROP INDEX users_username;
+ALTER TABLE users DROP COLUMN password_hash;
+ALTER TABLE users DROP COLUMN username;

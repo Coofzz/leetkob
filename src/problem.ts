@@ -11,6 +11,7 @@ export const PROBLEMS = {
   'not-found': { status: 404, title: 'Not found' },
   'idempotency-key-missing': { status: 400, title: 'Idempotency-Key required' },
   'code-too-large': { status: 413, title: 'Code too large' },
+  'body-too-large': { status: 413, title: 'Request body too large' },
   'idempotency-key-in-flight': { status: 409, title: 'Request in progress' },
   'idempotency-key-reused': { status: 422, title: 'Idempotency-Key reused' },
   'deadline-passed': { status: 422, title: 'Deadline passed' },
